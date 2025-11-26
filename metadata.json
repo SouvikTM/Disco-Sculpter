@@ -1,5 +1,0 @@
-{
-  "name": "Disco Sculpter",
-  "description": "A 3D interactive particle sphere set in a deep space environment. Users can switch between spinning the view or molding the sphere's shape with their mouse cursor.",
-  "requestFramePermissions": []
-}

@@ -1,12 +1,12 @@
-
 import React, { useState, useCallback } from 'react';
 import SpaceScene from './components/SpaceScene';
 import Controls from './components/Controls';
 import { SphereConfig } from './types';
+import { SoundProvider } from './components/SoundManager';
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const [resetTrigger, setResetTrigger] = useState<number>(0);
-  
+
   const [config, setConfig] = useState<SphereConfig>({
     particleCount: 12000,
     particleSize: 0.1,
@@ -27,12 +27,20 @@ const App: React.FC = () => {
   return (
     <div className="w-full h-screen relative bg-black overflow-hidden select-none">
       <SpaceScene config={config} resetTrigger={resetTrigger} />
-      <Controls 
-        config={config} 
+      <Controls
+        config={config}
         setConfig={setConfig}
         onReset={handleReset}
       />
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <SoundProvider>
+      <AppContent />
+    </SoundProvider>
   );
 };
 

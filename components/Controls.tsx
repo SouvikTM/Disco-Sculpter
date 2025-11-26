@@ -3,6 +3,8 @@ import React from 'react';
 import { SphereConfig } from '../types';
 import { Settings2, RotateCcw, MousePointer2, MousePointerClick, Droplets, Box, Flame, Zap, Skull, Waves } from 'lucide-react';
 
+import { useSound } from './SoundManager';
+
 interface ControlsProps {
   config: SphereConfig;
   setConfig: React.Dispatch<React.SetStateAction<SphereConfig>>;
@@ -10,7 +12,8 @@ interface ControlsProps {
 }
 
 const Controls: React.FC<ControlsProps> = ({ config, setConfig, onReset }) => {
-  
+  const { playSfx, setEffectMode, setPhysicsMode } = useSound();
+
   const handleColorChange = (key: 'colorA' | 'colorB', value: string) => {
     setConfig(prev => ({ ...prev, [key]: value }));
   };
@@ -21,15 +24,17 @@ const Controls: React.FC<ControlsProps> = ({ config, setConfig, onReset }) => {
 
   const toggleMode = (mode: 'solid' | 'liquid') => {
     setConfig(prev => ({ ...prev, mode }));
+    setPhysicsMode(mode);
   };
 
   const setEffect = (effect: SphereConfig['effect']) => {
     setConfig(prev => ({ ...prev, effect }));
+    setEffectMode(effect);
   };
 
   return (
     <div className="absolute top-0 left-0 w-full h-full pointer-events-none flex flex-col justify-between p-6 z-10">
-      
+
       {/* Header */}
       <div className="flex justify-between items-start pointer-events-auto">
         <div>
@@ -49,13 +54,14 @@ const Controls: React.FC<ControlsProps> = ({ config, setConfig, onReset }) => {
 
       {/* Reset Button (Bottom Center) */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 pointer-events-auto">
-         <button
-            onClick={onReset}
-            className="group flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all duration-300 text-gray-300 hover:text-white shadow-lg hover:shadow-cyan-500/20"
-          >
-            <RotateCcw size={18} className="group-hover:-rotate-180 transition-transform duration-500" />
-            <span className="font-medium tracking-wide text-sm">RESET SPHERE</span>
-          </button>
+        <button
+          onClick={() => { onReset(); playSfx('switch'); }}
+          onMouseEnter={() => playSfx('hover')}
+          className="group flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all duration-300 text-gray-300 hover:text-white shadow-lg hover:shadow-cyan-500/20"
+        >
+          <RotateCcw size={18} className="group-hover:-rotate-180 transition-transform duration-500" />
+          <span className="font-medium tracking-wide text-sm">RESET SPHERE</span>
+        </button>
       </div>
 
       {/* Configuration Panel */}
@@ -64,21 +70,23 @@ const Controls: React.FC<ControlsProps> = ({ config, setConfig, onReset }) => {
           <Settings2 size={18} />
           <span className="font-semibold">Configuration</span>
         </div>
-        
+
         <div className="space-y-6">
-          
+
           {/* Mode Switcher */}
           <div>
             <label className="text-xs text-gray-400 mb-2 block font-medium">Physics Mode</label>
             <div className="bg-white/5 p-1 rounded-lg flex gap-1">
-              <button 
+              <button
                 onClick={() => toggleMode('solid')}
+                onMouseEnter={() => playSfx('hover')}
                 className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-medium transition-all ${config.mode === 'solid' ? 'bg-cyan-600/80 text-white shadow-lg' : 'hover:bg-white/5 text-gray-400'}`}
               >
                 <Box size={14} /> Solid
               </button>
-               <button 
+              <button
                 onClick={() => toggleMode('liquid')}
+                onMouseEnter={() => playSfx('hover')}
                 className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-medium transition-all ${config.mode === 'liquid' ? 'bg-purple-600/80 text-white shadow-lg' : 'hover:bg-white/5 text-gray-400'}`}
               >
                 <Droplets size={14} /> Liquid
@@ -87,40 +95,45 @@ const Controls: React.FC<ControlsProps> = ({ config, setConfig, onReset }) => {
           </div>
 
           {/* Elemental Effects */}
-           <div>
+          <div>
             <label className="text-xs text-gray-400 mb-2 block font-medium">Elemental Overlay</label>
             <div className="grid grid-cols-5 gap-1 bg-white/5 p-1 rounded-lg">
-               <button 
+              <button
                 onClick={() => setEffect('none')}
+                onMouseEnter={() => playSfx('hover')}
                 title="None"
                 className={`flex items-center justify-center py-2 rounded-md transition-all ${config.effect === 'none' ? 'bg-gray-600 text-white' : 'hover:bg-white/10 text-gray-400'}`}
               >
                 <Box size={16} />
               </button>
-              <button 
+              <button
                 onClick={() => setEffect('fire')}
-                 title="Fire"
+                onMouseEnter={() => playSfx('hover')}
+                title="Fire"
                 className={`flex items-center justify-center py-2 rounded-md transition-all ${config.effect === 'fire' ? 'bg-orange-600 text-white' : 'hover:bg-white/10 text-gray-400'}`}
               >
                 <Flame size={16} />
               </button>
-              <button 
+              <button
                 onClick={() => setEffect('water')}
-                 title="Water"
+                onMouseEnter={() => playSfx('hover')}
+                title="Water"
                 className={`flex items-center justify-center py-2 rounded-md transition-all ${config.effect === 'water' ? 'bg-blue-600 text-white' : 'hover:bg-white/10 text-gray-400'}`}
               >
                 <Waves size={16} />
               </button>
-              <button 
+              <button
                 onClick={() => setEffect('toxic')}
-                 title="Toxic"
+                onMouseEnter={() => playSfx('hover')}
+                title="Toxic"
                 className={`flex items-center justify-center py-2 rounded-md transition-all ${config.effect === 'toxic' ? 'bg-lime-600 text-white' : 'hover:bg-white/10 text-gray-400'}`}
               >
                 <Skull size={16} />
               </button>
-               <button 
+              <button
                 onClick={() => setEffect('lightning')}
-                 title="Lightning"
+                onMouseEnter={() => playSfx('hover')}
+                title="Lightning"
                 className={`flex items-center justify-center py-2 rounded-md transition-all ${config.effect === 'lightning' ? 'bg-indigo-600 text-white' : 'hover:bg-white/10 text-gray-400'}`}
               >
                 <Zap size={16} />
@@ -135,7 +148,7 @@ const Controls: React.FC<ControlsProps> = ({ config, setConfig, onReset }) => {
                 <span>Particle Count</span>
                 <span>{config.particleCount}</span>
               </div>
-              <input 
+              <input
                 type="range" min="1000" max="20000" step="1000"
                 value={config.particleCount}
                 onChange={(e) => handleSliderChange('particleCount', parseInt(e.target.value))}
@@ -148,7 +161,7 @@ const Controls: React.FC<ControlsProps> = ({ config, setConfig, onReset }) => {
                 <span>Particle Size</span>
                 <span>{config.particleSize.toFixed(2)}</span>
               </div>
-              <input 
+              <input
                 type="range" min="0.02" max="0.3" step="0.01"
                 value={config.particleSize}
                 onChange={(e) => handleSliderChange('particleSize', parseFloat(e.target.value))}
@@ -161,7 +174,7 @@ const Controls: React.FC<ControlsProps> = ({ config, setConfig, onReset }) => {
                 <span>Mold Radius</span>
                 <span>{config.moldRadius.toFixed(1)}</span>
               </div>
-              <input 
+              <input
                 type="range" min="0.5" max="4.0" step="0.1"
                 value={config.moldRadius}
                 onChange={(e) => handleSliderChange('moldRadius', parseFloat(e.target.value))}
@@ -170,11 +183,11 @@ const Controls: React.FC<ControlsProps> = ({ config, setConfig, onReset }) => {
             </div>
 
             <div className="space-y-2">
-               <div className="flex justify-between text-xs text-gray-400 font-medium">
+              <div className="flex justify-between text-xs text-gray-400 font-medium">
                 <span>Mold Force</span>
                 <span>{config.moldStrength.toFixed(2)}</span>
               </div>
-              <input 
+              <input
                 type="range" min="0.01" max="1.0" step="0.01"
                 value={config.moldStrength}
                 onChange={(e) => handleSliderChange('moldStrength', parseFloat(e.target.value))}
@@ -191,7 +204,7 @@ const Controls: React.FC<ControlsProps> = ({ config, setConfig, onReset }) => {
                   <span>Viscosity (Damping)</span>
                   <span>{config.viscosity.toFixed(2)}</span>
                 </div>
-                <input 
+                <input
                   type="range" min="0.0" max="0.2" step="0.001"
                   value={config.viscosity}
                   onChange={(e) => handleSliderChange('viscosity', parseFloat(e.target.value))}
@@ -199,12 +212,12 @@ const Controls: React.FC<ControlsProps> = ({ config, setConfig, onReset }) => {
                 />
               </div>
 
-               <div className="space-y-2">
+              <div className="space-y-2">
                 <div className="flex justify-between text-xs text-gray-400 font-medium">
                   <span>Surface Tension</span>
                   <span>{config.tension.toFixed(3)}</span>
                 </div>
-                <input 
+                <input
                   type="range" min="0.0" max="0.1" step="0.001"
                   value={config.tension}
                   onChange={(e) => handleSliderChange('tension', parseFloat(e.target.value))}
@@ -213,15 +226,15 @@ const Controls: React.FC<ControlsProps> = ({ config, setConfig, onReset }) => {
               </div>
             </div>
           )}
-          
+
           {/* Colors (Only visible if no effect is selected) */}
           {config.effect === 'none' && (
-             <div className="pt-4 grid grid-cols-2 gap-3 border-t border-white/10 mt-2 animate-in fade-in">
+            <div className="pt-4 grid grid-cols-2 gap-3 border-t border-white/10 mt-2 animate-in fade-in">
               <div>
                 <label className="text-xs text-gray-400 mb-2 block font-medium">Gradient Start</label>
                 <div className="relative h-8 w-full rounded-md overflow-hidden ring-1 ring-white/20">
-                   <input 
-                    type="color" 
+                  <input
+                    type="color"
                     value={config.colorA}
                     onChange={(e) => handleColorChange('colorA', e.target.value)}
                     className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] cursor-pointer p-0 m-0 border-0"
@@ -230,16 +243,16 @@ const Controls: React.FC<ControlsProps> = ({ config, setConfig, onReset }) => {
               </div>
               <div>
                 <label className="text-xs text-gray-400 mb-2 block font-medium">Gradient End</label>
-                 <div className="relative h-8 w-full rounded-md overflow-hidden ring-1 ring-white/20">
-                   <input 
-                    type="color" 
+                <div className="relative h-8 w-full rounded-md overflow-hidden ring-1 ring-white/20">
+                  <input
+                    type="color"
                     value={config.colorB}
                     onChange={(e) => handleColorChange('colorB', e.target.value)}
-                     className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] cursor-pointer p-0 m-0 border-0"
+                    className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] cursor-pointer p-0 m-0 border-0"
                   />
                 </div>
               </div>
-             </div>
+            </div>
           )}
         </div>
       </div>
