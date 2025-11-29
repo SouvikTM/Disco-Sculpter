@@ -2,9 +2,8 @@ import React, { useState, useCallback } from 'react';
 import SpaceScene from './components/SpaceScene';
 import Controls from './components/Controls';
 import { SphereConfig } from './types';
-import { SoundProvider } from './components/SoundManager';
 
-const AppContent: React.FC = () => {
+const App: React.FC = () => {
   const [resetTrigger, setResetTrigger] = useState<number>(0);
 
   const [config, setConfig] = useState<SphereConfig>({
@@ -33,14 +32,6 @@ const AppContent: React.FC = () => {
         onReset={handleReset}
       />
     </div>
-  );
-};
-
-const App: React.FC = () => {
-  return (
-    <SoundProvider>
-      <AppContent />
-    </SoundProvider>
   );
 };
 
